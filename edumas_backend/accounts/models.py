@@ -87,7 +87,7 @@ class Permission(models.Model):
 class UserRole(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_roles')
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    # school = models.ForeignKey('core.School', on_delete=models.CASCADE)
+    school = models.ForeignKey('core.School', on_delete=models.CASCADE)
     
     class Meta:
         unique_together = ['user', 'role']

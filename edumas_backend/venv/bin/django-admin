@@ -1,4 +1,4 @@
-#!/home/baifam/Desktop/projs/edumas/edumas_backend/venv/bin/python3
+#!/home/prodi/Desktop/Projects/fixes/edumas_backend/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
