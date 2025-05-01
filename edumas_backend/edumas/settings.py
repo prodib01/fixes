@@ -94,7 +94,7 @@ EMAIL_HOST_USER = 'eazedairy@gmail.com'
 EMAIL_HOST_PASSWORD = 'dngh jjwa fjux evkv'  
 DEFAULT_FROM_EMAIL = 'EDUMAS <eazedairy@gmail.com>'
 
-FRONTEND_URL = 'http://localhost:3000'
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
 
 TEMPLATES = [
     {

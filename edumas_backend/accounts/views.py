@@ -182,11 +182,8 @@ class VerifyEmailView(APIView):
     )
     def get(self, request, token):
         try:
-            # Validate UUID format
-            token_uuid = uuid.UUID(token)
-            
-            # Find the token
-            verification_token = EmailVerificationToken.objects.select_related('user').get(token=token_uuid)
+            # Use the class method to verify and retrieve the token
+            verification_token = EmailVerificationToken.verify_token(token)
             
             # Check if token is expired
             if not verification_token.is_valid():
@@ -209,7 +206,7 @@ class VerifyEmailView(APIView):
                 status=status.HTTP_200_OK
             )
             
-        except (ValueError, uuid.BadUUIDError):
+        except ValueError:
             return Response(
                 {"error": "Invalid verification token format."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -260,15 +257,12 @@ class ResendVerificationEmailView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Delete any existing tokens
-            EmailVerificationToken.objects.filter(user=user).delete()
+            # Create new token using class method
+            token_obj, raw_token = EmailVerificationToken.create_for_user(user)
             
-            # Create new token
-            token = EmailVerificationToken.objects.create(user=user)
-            
-            # Send verification email
+            # Send verification email with raw token
             from .utils import send_verification_email
-            send_verification_email(user, token)
+            send_verification_email(user, raw_token)
             
             return Response(
                 {"message": "Verification email sent."},

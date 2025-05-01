@@ -3,9 +3,9 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-def send_verification_email(user, token):
+def send_verification_email(user, raw_token):
     """Send verification email to the user."""
-    verification_url = f"{settings.FRONTEND_URL}/verify-email/{token.token}"
+    verification_url = f"{settings.FRONTEND_URL}/verify-email/{raw_token}"
     
     subject = "Verify your email address"
     html_message = render_to_string('email/verification_email.html', {
