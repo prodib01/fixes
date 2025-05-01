@@ -5,6 +5,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.utils import timezone
+import uuid
+from datetime import timedelta
 
 
 class CustomUserManager(BaseUserManager):
@@ -32,6 +34,41 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(default=timezone.now)
+    last_login = models.DateTimeField(blank=True, null=True)
+    email_verified = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = "email"
+
+class EmailVerificationToken(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='verification_token')
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(days=2)  # Token expires after 2 days
+        super().save(*args, **kwargs)
+    
+    def is_valid(self):
+        return timezone.now() <= self.expires_at
+    
+    def __str__(self):
+        return f"Verification token for {self.user.email}"    
+
+
+class UserProfile(models.Model):
+    GENDER_CHOICES = (
+        ("M", "Male"),
+        ("F", "Female"),
+        ("O", "Other"),
+    )
     USER_TYPE_CHOICES = (
         ("admin", "Admin"),
         ("school_owner", "School Owner"),
@@ -42,22 +79,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     user_type = models.CharField(
         max_length=20, choices=USER_TYPE_CHOICES, default="student"
     )
-    email = models.EmailField(unique=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(default=timezone.now)
-    last_login = models.DateTimeField(blank=True, null=True)
-
-    objects = CustomUserManager()
-
-    USERNAME_FIELD = "email"
-
-
-class UserProfile(models.Model):
-    GENDER_CHOICES = (
-        ("M", "Male"),
-        ("F", "Female"),
-        ("O", "Other"),
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="profile",
+        blank=True,
+        null=True,
     )
     gender = models.CharField(
         max_length=1, choices=GENDER_CHOICES, blank=True, null=True
@@ -70,6 +97,7 @@ class UserProfile(models.Model):
     profile_picture = models.ImageField(upload_to="profiles/", blank=True, null=True)
     emergency_contact = models.CharField(max_length=100, blank=True, null=True)
     emergency_phone = models.CharField(max_length=20, blank=True, null=True)
+    
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
