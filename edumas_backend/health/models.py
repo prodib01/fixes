@@ -1,7 +1,7 @@
 # medical/models.py
 
 from django.db import models
-from accounts.models import UserProfile
+from accounts.models import CustomUser
 from core.models import School, Campus
 from academics.models import Student, Staff
 
@@ -41,7 +41,7 @@ class MedicalVisit(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='medical_visits')
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='medical_visits')  # For multi-tenancy
     campus = models.ForeignKey(Campus, on_delete=models.CASCADE, related_name='medical_visits')
-    attended_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='attended_medical_visits')
+    attended_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='attended_medical_visits')
     date = models.DateField()
     time = models.TimeField()
     complaint = models.TextField()
@@ -70,7 +70,7 @@ class MedicalIncident(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='medical_incidents')
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='medical_incidents')  # For multi-tenancy
     campus = models.ForeignKey(Campus, on_delete=models.CASCADE, related_name='medical_incidents')
-    reported_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='reported_incidents')
+    reported_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='reported_incidents')
     date = models.DateField()
     time = models.TimeField()
     description = models.TextField()

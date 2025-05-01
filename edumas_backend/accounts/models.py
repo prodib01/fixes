@@ -27,7 +27,7 @@ class UserProfileManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class UserProfile(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -85,7 +85,7 @@ class Permission(models.Model):
 
 
 class UserRole(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_roles')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_roles')
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     school = models.ForeignKey('core.School', on_delete=models.CASCADE)
     
@@ -97,7 +97,7 @@ class UserRole(models.Model):
 
 
 class Document(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='documents')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='documents')
     name = models.CharField(max_length=100)
     doc = models.FileField(upload_to='documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
