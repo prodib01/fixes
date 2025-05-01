@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import CustomUser
+from accounts.models import UserProfile
 from core.models import School, Department, Campus, ClassRoom
 
 
@@ -18,7 +18,7 @@ class Staff(models.Model):
         ('support', 'Support Staff'),
     )
     
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='staff_profile')
+    profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='staff_profile')
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='staff')  # Added for multi-tenancy
     staff_id = models.CharField(max_length=50)
     hire_date = models.DateField()
@@ -150,7 +150,7 @@ class Term(models.Model):
 
 
 class Student(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='student_profile')
+    profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='student_profile')
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='students')
     student_id = models.CharField(max_length=50)
     admission_date = models.DateField()
@@ -174,7 +174,7 @@ class ParentGuardian(models.Model):
         ('other', 'Other'),
     )
     
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='parent_profiles')
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='parent_profiles')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='parents_guardians')
     relationship = models.CharField(max_length=20, choices=RELATIONSHIP_CHOICES)
     occupation = models.CharField(max_length=255, blank=True, null=True)

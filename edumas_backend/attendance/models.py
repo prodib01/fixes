@@ -1,6 +1,6 @@
 
 from django.db import models
-from accounts.models import CustomUser
+from accounts.models import UserProfile
 from core.models import School, Campus
 from academics.models import Staff, Student, Stream, Class
 
@@ -13,7 +13,7 @@ class Attendance(models.Model):
     
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='attendance_records')  # For multi-tenancy
     campus = models.ForeignKey(Campus, on_delete=models.CASCADE, related_name='attendance_records')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='attendance_records')
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='attendance_records')
     attendance_type = models.CharField(max_length=10, choices=ATTENDANCE_TYPE_CHOICES)
     date = models.DateField()
     present = models.BooleanField(default=False)
@@ -25,10 +25,10 @@ class Attendance(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        unique_together = ['user', 'date']
+        unique_together = ['profile', 'date']
         
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.date} - {'Present' if self.present else 'Absent'}"
+        return f"{self.profile.get_full_name()} - {self.date} - {'Present' if self.present else 'Absent'}"
 
 
 class ClassAttendance(models.Model):

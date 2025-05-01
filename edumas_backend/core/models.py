@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import CustomUser
+from accounts.models import UserProfile
 
 
 class School(models.Model):
@@ -17,7 +17,7 @@ class School(models.Model):
         ('boys', 'Boys Only'),
     )
     
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='owned_schools')
+    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='owned_schools')
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=50, unique=True)
     country = models.CharField(max_length=100)
