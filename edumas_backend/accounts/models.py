@@ -32,6 +32,16 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    USER_TYPE_CHOICES = (
+        ("admin", "Admin"),
+        ("school_owner", "School Owner"),
+        ("staff", "Staff"),
+        ("student", "Student"),
+        ("parent", "Parent"),
+    )
+    user_type = models.CharField(
+        max_length=20, choices=USER_TYPE_CHOICES, default="student"
+    )
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
