@@ -18,6 +18,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import EmailVerificationToken, CustomUser
 from django.utils import timezone
 import uuid
+from django.db import transaction
 
 
 class UserRegistrationView(APIView):
@@ -193,10 +194,12 @@ class VerifyEmailView(APIView):
                 )
             
             # Mark user as verified and active
-            user = verification_token.user
-            user.email_verified = True
-            user.is_active = True
-            user.save()
+            with transaction.atomic():
+                user = verification_token.user
+                user.email_verified = True
+                user.is_active = True
+                user.save()
+                verification_token.delete()
             
             # Delete the token as it's been used
             verification_token.delete()
