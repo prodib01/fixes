@@ -72,13 +72,6 @@ class Campus(models.Model):
         max_digits=12, decimal_places=8, blank=True, null=True
     )
     code = models.CharField(max_length=50)
-    director = models.ForeignKey(
-        "academics.Staff",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="directed_campuses",
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

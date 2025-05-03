@@ -5,6 +5,7 @@ from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from drf_spectacular.utils import extend_schema
 from .models import UserProfile, CustomUser, EmailVerificationToken
 from .serializers import (
+    LoginResponseSerializer,
     UserProfileSerializer, 
     CustomUserSerializer,
     UserRegistrationSerializer,
@@ -53,14 +54,7 @@ class LoginView(APIView):
         summary="Login and get JWT tokens",
         request=LoginSerializer,
         responses={
-            200: {
-                "type": "object", 
-                "properties": {
-                    "refresh": {"type": "string"},
-                    "access": {"type": "string"},
-                    "user": {"type": "object"}
-                }
-            },
+            200: LoginResponseSerializer,
             401: {"description": "Invalid credentials or email not verified"},
             400: {"description": "Invalid request"}
         },
@@ -98,16 +92,11 @@ class LoginView(APIView):
                     user_type = None
                     name = None
                 
+                serializer = UserProfileSerializer(user.profile)
                 return Response({
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
-                    'user': {
-                        'id': user.id,
-                        'email': user.email,
-                        'user_type': user_type,
-                        'name': name,
-                        'email_verified': user.email_verified
-                    }
+                    'user': serializer.data,
                 })
             else:
                 return Response(

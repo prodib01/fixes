@@ -6,15 +6,20 @@ const API_BASE_URL =
 // Helper function to get the authentication token
 export const getToken = (): string | null => {
   if (typeof window !== "undefined") {
-    return localStorage.getItem("token");
+    return localStorage.getItem("accessToken");
   }
   return null;
 };
 
 // Helper function to set the authentication token
-export const setLocalStorageConfigs = (token: string, userProfile: IUserProfile): void => {
+export const setLocalStorageConfigs = (
+  accessToken: string,
+  refreshToken: string,
+  userProfile: IUserProfile
+): void => {
   if (typeof window !== "undefined") {
-    localStorage.setItem("token", token);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
     localStorage.setItem("userProfile", JSON.stringify(userProfile));
   }
 };
@@ -88,12 +93,11 @@ const apiRequest = async <T>(
 // Authentication API functions with improved error handling
 export const authAPI = {
   login: async (email: string, password: string) => {
-    return apiRequest<{ token: string }>(
-      "/accounts/login/",
-      "POST",
-      { email, password },
-      false
-    );
+    return apiRequest<{
+      access: string;
+      refresh: string;
+      user_profile: IUserProfile;
+    }>("/accounts/login/", "POST", { email, password }, false);
   },
 
   register: async (userData: {
@@ -229,18 +233,37 @@ export const courseAPI = {
 // School API functions
 export const schoolAPI = {
   create: async (schoolData: any) => {
-    return apiRequest("/schools/", "POST", schoolData);
+    return apiRequest("/core/schools/", "POST", schoolData);
   },
 
   getById: async (id: string) => {
-    return apiRequest(`/schools/${id}/`, "GET");
+    return apiRequest(`/core/schools/${id}/`, "GET");
   },
 
   update: async (id: string, schoolData: any) => {
-    return apiRequest(`/schools/${id}/`, "PUT", schoolData);
+    return apiRequest(`/core/schools/${id}/`, "PUT", schoolData);
   },
 
   delete: async (id: string) => {
-    return apiRequest(`/schools/${id}/`, "DELETE");
+    return apiRequest(`/core/schools/${id}/`, "DELETE");
+  },
+};
+
+// Add this new API object for campus operations
+export const campusAPI = {
+  create: async (campusData: any) => {
+    return apiRequest("/core/campuses/", "POST", campusData);
+  },
+
+  getById: async (id: string) => {
+    return apiRequest(`/core/campuses/${id}/`, "GET");
+  },
+
+  update: async (id: string, campusData: any) => {
+    return apiRequest(`/core/campuses/${id}/`, "PUT", campusData);
+  },
+
+  delete: async (id: string) => {
+    return apiRequest(`/core/campuses/${id}/`, "DELETE");
   },
 };

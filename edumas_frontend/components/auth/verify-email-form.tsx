@@ -9,7 +9,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { IUserProfile } from "@/lib/types";
 
-// Add props type
 interface VerifyEmailFormProps {
   initialEmail?: string;
 }
@@ -23,7 +22,6 @@ export function VerifyEmailForm({ initialEmail = "" }: VerifyEmailFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // In case the prop changes dynamically
   useEffect(() => {
     setEmail(initialEmail);
   }, [initialEmail]);
@@ -44,7 +42,11 @@ export function VerifyEmailForm({ initialEmail = "" }: VerifyEmailFormProps) {
       const user: IUserProfile = response.user_profile;
 
       if (response.access) {
-        setLocalStorageConfigs(response.access, response.user_profile);
+        setLocalStorageConfigs(
+          response.access,
+          response.refresh,
+          response.user_profile
+        );
       }
 
       setSuccess("Email verified successfully! Redirecting to dashboard...");
